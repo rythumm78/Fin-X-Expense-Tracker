@@ -1,35 +1,59 @@
-  import Navbar from './navbar.jsx';
-  import './App.css';
-  import Front from './front.jsx';
-  import AddExpense from './AddExpense.jsx';
-  import { Routes,Route } from 'react-router-dom';
-  import Dashboard from './Dashboard.jsx';
-  import TempDetail from './TempDetail.jsx';
-import ReadBlog from './Read-Blog.jsx';
 
+import './App.css';
 
-  
-  function App() {
-    return (
-      <div className="App">
-        <Navbar/>
+import { Routes, Route } from 'react-router-dom';
 
+import Navbar from './navbar.jsx';
+import Front from './front.jsx';
+import Signup from './signup.jsx';
+import ProtectedRoute from './Protectedroute.jsx';
+import AddExpense from './AddExpense.jsx';
+import Dashboard from './Dashboard.jsx';
 
+function App() {
+  return (
+    <div className="App">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <Front />
+            </>
+          }
+        />
 
-        <Routes>
+        <Route path="/signup" element={<Signup />} />
 
-          <Route path="/" element={<Front/>} />
-          <Route path="/add-expense" element={<AddExpense/>} />
-      <Route path="/dashboard" element={<Dashboard/>} />
-      <Route path="/read-blog" element={<ReadBlog/>} />
-      <Route path="/tempdetail" element={<TempDetail/>} />    
-        </Routes>
-      </div>
+        <Route
+          path="/add-expense"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <AddExpense />
+              </>
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <>
+                <Navbar />
+                <Dashboard />
+              </>
+            </ProtectedRoute>
+          }
+        />
 
+        <Route path="*" element={<Front />} />
+      </Routes>
+    </div>
+  );
+}
 
-      
-    ) ;
-  }
-
-  export default App
+export default App;

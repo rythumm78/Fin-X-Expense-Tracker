@@ -1,167 +1,127 @@
 
-import { useState } from "react";
+import { useState } from 'react';
 
 function AddExpense() {
-  const [expense, setExpense] = useState({
-    title: "",
-    amount: "",
-    type: "Expense",
-    category: "",
-    date: "",
-  });
+  const currentUser = localStorage.getItem('currentUser');
 
-  const handleChange = (e) => {
-    setExpense({
-      ...expense,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [type, setType] = useState('Expense');
+  const [category, setCategory] = useState('Food');
+  const [date, setDate] = useState(
+    new Date().toISOString().split('T')[0]
+  );
+  const [message, setMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const savedExpenses =
-      JSON.parse(localStorage.getItem("expenses")) || [];
+    const storageKey = `expenses_${currentUser}`;
+
+    const transactions = JSON.parse(
+      localStorage.getItem(storageKey) || '[]'
+    );
 
     const newTransaction = {
       id: Date.now(),
-      title: expense.title,
-      amount: Number(expense.amount),
-      type: expense.type,
-      category:
-        expense.type === "Income"
-          ? "Other"
-          : expense.category,
-      date: expense.date,
+      title: title.trim(),
+      amount: Number(amount),
+      type,
+      category,
+      date
     };
 
-    savedExpenses.push(newTransaction);
+    transactions.push(newTransaction);
 
-    localStorage.setItem(
-      "expenses",
-      JSON.stringify(savedExpenses)
-    );
+    localStorage.setItem(storageKey, JSON.stringify(transactions));
 
-    // Dashboard ko update karna
-    window.dispatchEvent(
-      new Event("transactionsUpdated")
-    );
+    window.dispatchEvent(new Event('transactionsUpdated'));
 
-    alert(`${expense.type} Added Successfully!`);
-
-    setExpense({
-      title: "",
-      amount: "",
-      type: "Expense",
-      category: "",
-      date: "",
-    });
+    setTitle('');
+    setAmount('');
+    setType('Expense');
+    setCategory('Food');
+    setDate(new Date().toISOString().split('T')[0]);
+    setMessage('Transaction added successfully!');
   };
 
   return (
-    <div className="expense-form-container">
-      <h2>Add New Transaction</h2>
+    <div className="page-container">
+      <div className="form-card">
+        <h1>Add Transaction</h1>
+        <p className="page-subtitle">Record your income and expenses</p>
 
-      <form
-        onSubmit={handleSubmit}
-        className="expense-form"
-      >
-        {/* Transaction Type */}
-        <div className="input-group">
-          <label>Transaction Type</label>
-
-          <select
-            name="type"
-            value={expense.type}
-            onChange={handleChange}
+        <form onSubmit={handleSubmit}>
+          <label>Transaction Title</label>
+          <input
+            type="text"
+            placeholder="e.g. Grocery Shopping"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
+          />
+
+          <label>Amount (₹)</label>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            min="0.01"
+            step="0.01"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+
+          <label>Transaction Type</label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
           >
             <option value="Expense">Expense</option>
             <option value="Income">Income</option>
           </select>
-        </div>
 
-        {/* Title */}
-        <div className="input-group">
-          <label>
-            {expense.type === "Income"
-              ? "Income Title"
-              : "Expense Title"}
-          </label>
+          <label>Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {type === 'Expense' ? (
+              <>
+                <option>Food</option>
+                <option>Travel</option>
+                <option>Shopping</option>
+                <option>Bills</option>
+                <option>Education</option>
+                <option>Entertainment</option>
+                <option>Other</option>
+              </>
+            ) : (
+              <>
+                <option>Salary</option>
+                <option>Business</option>
+                <option>Freelance</option>
+                <option>Investment</option>
+                <option>Other</option>
+              </>
+            )}
+          </select>
 
-          <input
-            type="text"
-            name="title"
-            placeholder={
-              expense.type === "Income"
-                ? "e.g. Salary, Freelancing"
-                : "e.g. Rent, Groceries, Swiggy"
-            }
-            value={expense.title}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        {/* Amount */}
-        <div className="input-group">
-          <label>Amount (₹)</label>
-
-          <input
-            type="number"
-            name="amount"
-            placeholder="Enter amount"
-            value={expense.amount}
-            onChange={handleChange}
-            min="0.01"
-            step="0.01"
-            required
-          />
-        </div>
-
-        {/* Category: Expense only */}
-        {expense.type === "Expense" && (
-          <div className="input-group">
-            <label>Category</label>
-
-            <select
-              name="category"
-              value={expense.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="" disabled>
-                Select a category
-              </option>
-              <option value="Food">Food & Dining</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Bills">Bills & Utilities</option>
-              <option value="Travel">Travel / Fuel</option>
-              <option value="Entertainment">
-                Entertainment
-              </option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-        )}
-
-        {/* Date */}
-        <div className="input-group">
           <label>Date</label>
-
           <input
             type="date"
-            name="date"
-            value={expense.date}
-            onChange={handleChange}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
             required
           />
-        </div>
 
-        <button type="submit" className="submit-btn">
-          Add {expense.type}
-        </button>
-      </form>
+          {message && <p className="success-message">{message}</p>}
+
+          <button className="primary-btn" type="submit">
+            Add Transaction
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

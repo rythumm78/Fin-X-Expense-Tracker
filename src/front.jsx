@@ -1,41 +1,39 @@
+
 import { useNavigate } from 'react-router-dom';
 
-
-
-
-
-
-
-
 function Front() {
-
-
-
   const navigate = useNavigate();
-  return (
-    <div className="hero-container">
-      {/* Left Side Section */}
-      <div className="hero-content">
-        <h2>
-          Know your spending Grow your <span className="green">Savings.</span>
-        </h2>
-        <h5>
-          The fastest, smartest expense tracker for India. Add an expense in under 5 seconds — with budgets, recurring bills, analytics and smart insights.
-        </h5>
 
-        <div className="butn">
-          <button type="button" className="btn1" onClick={() => navigate('/tempdetail')}>
-            Login <span>→</span>
+  return (
+    <div className="hero">
+      <div className="hero-content">
+        <span className="hero-tag">WELCOME TO FIN-X</span>
+
+        <h1>
+          Know Your Spending.
+          <br />
+          <span>Grow Your Savings.</span>
+        </h1>
+
+        <p>
+          Manage your income, track your expenses and take
+          control of your financial journey with Fin-X.
+        </p>
+
+        <div className="hero-buttons">
+          <button onClick={() => navigate('/signup')}>
+            Login
           </button>
-          <button type="button" onClick={() => navigate('/read-blog')} className="btn2">
-            Read the blog
+
+          <button
+            className="secondary-btn"
+            onClick={() => navigate('/signup', {
+              state: { mode: 'signup' }
+            })}
+          >
+            Sign Up
           </button>
         </div>
-      </div>
-
-      {/* Right Side Section */}
-      <div className="illustration">
-        <img src="/illustration.png" alt="illustration" />
       </div>
     </div>
   );

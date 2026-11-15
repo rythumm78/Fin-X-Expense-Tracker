@@ -1,61 +1,71 @@
 
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
+function Navbar() {
+  const navigate = useNavigate();
 
+  const [loggedIn, setLoggedIn] = useState(
+    localStorage.getItem('isLoggedIn') === 'true'
+  );
 
+  useEffect(() => {
+    const updateAuth = () => {
+      setLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+    };
 
+    window.addEventListener('storage', updateAuth);
+    window.addEventListener('authChanged', updateAuth);
 
- function Navbar (){
+    return () => {
+      window.removeEventListener('storage', updateAuth);
+      window.removeEventListener('authChanged', updateAuth);
+    };
+  }, []);
 
+  const logout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
 
+    setLoggedIn(false);
+    navigate('/');
+  };
 
-    return(
+  return (
+    <nav className="navbar">
+      <Link to="/" className="logo">
+        FIN<span>-X</span>
+      </Link>
 
-<nav className="navbar navbar-expand-lg ">
-  <div className="container-fluid">
-    <a className="navbar-brand" href="#">Fin <span className="text-green">X</span></a>
-    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span className="navbar-toggler-icon"></span>
-    </button>
-    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-     
-      <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-       
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="/">Home</a>
-        </li>
+      <div className="nav-links">
+        <Link to="/add-expense">Add Expense</Link>
+        <Link to="/dashboard">Dashboard</Link>
+      </div>
 
-        
-        
-        <li className="nav-item">
-          <a className="nav-link" href="/add-expense">Add Expense</a>
-        </li>
-       
-<li className="nav-item">
-          <a className="nav-link" href="/dashboard">Dashboard</a>
-        </li>
+      <div className="nav-actions">
+        {loggedIn ? (
+          <button className="logout-btn" onClick={logout}>
+            Logout
+          </button>
+        ) : (
+          <>
+            <button onClick={() => navigate('/signup')}>
+              Login
+            </button>
 
-
-
-      </ul>
-      <form className="d-flex" role="search">
-        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button className="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
-
-
-
-    )
-
-
-
-
-
-
-
+            <button
+              className="nav-signup"
+              onClick={() => navigate('/signup', {
+                state: { mode: 'signup' }
+              })}
+            >
+              Sign Up
+            </button>
+          </>
+        )}
+      </div>
+    </nav>
+  );
 }
-
 
 export default Navbar;

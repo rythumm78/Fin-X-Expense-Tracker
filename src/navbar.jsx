@@ -28,6 +28,7 @@ function Navbar() {
     localStorage.removeItem('currentUser');
 
     setLoggedIn(false);
+    window.dispatchEvent(new Event('authChanged'));
     navigate('/');
   };
 
@@ -55,9 +56,11 @@ function Navbar() {
 
             <button
               className="nav-signup"
-              onClick={() => navigate('/signup', {
-                state: { mode: 'signup' }
-              })}
+              onClick={() =>
+                navigate('/signup', {
+                  state: { mode: 'signup' }
+                })
+              }
             >
               Sign Up
             </button>
